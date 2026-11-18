@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!-- © 2026 Winnce Tubtub. All rights reserved. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Winnce Tubtub">
+<meta name="copyright" content="© 2026 Winnce Tubtub. All rights reserved.">
+<title>Quiz Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+:root{--felt:#0f3d3a;--felt2:#0a2b29;--ivory:#fbf6e9;--sun:#ffc83d;--coral:#ff6b5b;--mint:#6fdca8;--ink:#1b2a2a}
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;font-family:Nunito,system-ui,sans-serif;color:var(--ivory);background:radial-gradient(circle at 50% 0%,#1b5a54,var(--felt) 45%,var(--felt2));overflow-x:hidden}
+.bg i{position:fixed;top:110%;width:70px;height:100px;border-radius:10px;background:var(--ivory);opacity:.06;left:var(--x);transform:rotate(var(--r));animation:drift var(--t) linear infinite;animation-delay:var(--d);pointer-events:none}
+@keyframes drift{to{transform:translateY(-135vh) rotate(calc(var(--r) + 200deg))}}
+main{max-width:860px;margin:0 auto;padding:20px 16px 56px;min-height:100vh;display:grid;align-items:center;position:relative}
+.screen{display:none;grid-area:1/1}
+.screen.on{display:block;animation:in .5s cubic-bezier(.2,.9,.3,1)}
+@keyframes in{from{opacity:0;transform:scale(.96) translateY(14px)}}
+h1,h2{font-family:Fredoka,sans-serif;letter-spacing:-.01em;line-height:1.05}
+h1{font-size:clamp(2.6rem,9vw,4.4rem)}
+.center{text-align:center}
+.sub{opacity:.8;margin:12px auto 26px;max-width:46ch;font-size:1.05rem;line-height:1.5}
+.btn{font:700 1rem Fredoka,sans-serif;border:0;border-radius:14px;padding:12px 24px;background:var(--sun);color:var(--ink);box-shadow:0 5px 0 #c99200;cursor:pointer;transition:transform .1s,box-shadow .1s,filter .2s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #c99200}
+.btn.ghost{background:transparent;color:var(--ivory);box-shadow:inset 0 0 0 2px #ffffff44}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+/* fan */
+.fan{display:flex;justify-content:center;height:130px;margin-bottom:18px}
+.fan b{width:84px;height:116px;margin:0 -10px;border-radius:12px;border:5px solid var(--ivory);background:repeating-linear-gradient(45deg,var(--coral) 0 9px,#ff8a7c 9px 18px);display:grid;place-items:center;font:700 2rem Fredoka;color:var(--ivory);text-shadow:0 2px 0 #0004;transform-origin:50% 120%;animation:fan 1s cubic-bezier(.2,1.3,.4,1) both}
+.fan b:nth-child(1){--r:-16deg;animation-delay:.1s}.fan b:nth-child(2){--r:0deg;animation-delay:.25s;background:repeating-linear-gradient(45deg,var(--sun) 0 9px,#ffd86b 9px 18px)}.fan b:nth-child(3){--r:16deg;animation-delay:.4s;background:repeating-linear-gradient(45deg,var(--mint) 0 9px,#97ebc3 9px 18px)}
+@keyframes fan{from{transform:rotate(0) translateY(30px) scale(.6);opacity:0}to{transform:rotate(var(--r))}}
+.fan:hover b{transition:transform .3s}.fan:hover b:nth-child(1){transform:rotate(-24deg)}.fan:hover b:nth-child(3){transform:rotate(24deg)}
+/* drop */
+.drop{display:block;border:3px dashed var(--sun);border-radius:22px;padding:34px 20px;cursor:pointer;background:#ffffff0d;transition:transform .2s,background .2s,box-shadow .2s}
+.drop:hover,.drop.over{background:#ffc83d22;transform:scale(1.02);box-shadow:0 0 0 8px #ffc83d18}
+.drop strong{display:block;font:700 1.4rem Fredoka}.drop small{opacity:.7}
+.drop input{display:none}
+#status{min-height:1.6em;margin-top:16px;font-weight:700}
+#status.err{color:#ffb3a8}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid #fff5;border-top-color:var(--sun);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* menu */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.chip{background:#ffffff18;border-radius:99px;padding:6px 14px;font-weight:700;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:10px;margin-bottom:22px}
+.tab{flex:1;font:700 1.1rem Fredoka;padding:14px 8px;border-radius:16px;border:3px solid var(--c);background:transparent;color:var(--c);cursor:pointer;transition:all .25s}
+.tab.on{background:var(--c);color:var(--ink);transform:translateY(-4px);box-shadow:0 8px 0 #0004}
+.tab small{display:block;font:500 .75rem Nunito;opacity:.85}
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px}
+.lvl{border:0;border-radius:18px;padding:18px 8px;background:var(--ivory);color:var(--ink);cursor:pointer;font:700 1rem Fredoka;transition:transform .2s;animation:pop .5s both}
+.lvl:hover:not(:disabled){transform:translateY(-6px) rotate(-2deg)}
+.lvl:disabled{background:#ffffff18;color:#fff8;cursor:not-allowed}
+.lvl big{display:block;font-size:2.2rem}.lvl small{display:block;font:500 .8rem Nunito;margin-top:2px}
+.st{color:#d9d2bd;letter-spacing:2px}.st u{text-decoration:none;color:#f0a800}
+@keyframes pop{from{opacity:0;transform:scale(.7)}}
+/* game */
+.hud{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pill{background:#ffffff18;border-radius:14px;padding:8px 16px;font:700 1.1rem Fredoka}
+.pill.bump{animation:bump .4s}
+@keyframes bump{50%{transform:scale(1.25);background:var(--mint);color:var(--ink)}}
+.clock{position:relative;width:64px;height:64px;font:700 .95rem Fredoka;display:grid;place-items:center}
+.clock svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.clock circle{fill:none;stroke-width:6}
+.clock .tr{stroke:#ffffff22}.clock .pg{stroke:var(--mint);stroke-linecap:round;stroke-dasharray:151;transition:stroke-dashoffset 1s linear,stroke .3s}
+.clock.low .pg{stroke:var(--coral)}.clock.low{color:var(--coral);animation:tick 1s infinite}
+@keyframes tick{50%{transform:scale(1.08)}}
+.prog{height:8px;border-radius:9px;background:#ffffff1f;margin:16px 0 8px;overflow:hidden}
+.prog div{height:100%;width:0;background:var(--sun);border-radius:9px;transition:width .5s}
+.qn{opacity:.75;font-weight:700}
+.qbox{background:var(--ivory);color:var(--ink);border-radius:22px;padding:clamp(18px,4vw,30px);margin-top:10px;font-weight:700;font-size:clamp(1.05rem,2.8vw,1.4rem);line-height:1.55;box-shadow:0 8px 0 #0005;animation:in .5s}
+.blank{display:inline-block;min-width:5em;border-bottom:4px solid var(--coral);vertical-align:bottom;height:1.2em}
+.cards{display:grid;gap:12px;margin:26px 0 16px}
+.opt{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;cursor:pointer;background:var(--ivory);color:var(--ink);border-radius:16px;padding:14px 18px;font:700 clamp(1rem,2.6vw,1.2rem) Fredoka,sans-serif;box-shadow:0 5px 0 #0005;transition:transform .15s,background .25s,opacity .25s;animation:deal .5s both cubic-bezier(.2,.9,.3,1.2);animation-delay:var(--d)}
+.opt:hover{transform:translateY(-3px)}
+.opt:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+@keyframes deal{from{opacity:0;transform:translateX(-40px)}}
+.opt b{flex:none;width:38px;height:38px;border-radius:50%;background:var(--coral);color:var(--ivory);display:grid;place-items:center;font:700 1.1rem Fredoka,sans-serif;transition:background .25s}
+.opt .a{flex:1;overflow-wrap:anywhere;line-height:1.2}
+.opt .tag{font:700 .85rem Nunito,sans-serif;white-space:nowrap}
+.locked .opt{cursor:default}.locked .opt:hover{transform:none}
+.opt.ok{background:var(--mint)}.opt.bad{background:var(--coral);color:#fff}.opt.dim{opacity:.55}
+.opt.ok b,.opt.bad b{background:var(--ink)}
+.fb{min-height:3.2em;text-align:center;font:700 1.25rem Fredoka;transition:opacity .3s;opacity:0}
+.fb.on{opacity:1}.fb.ok{color:var(--mint)}.fb.bad{color:#ffb3a8}
+#next{display:block;margin:6px auto 0;visibility:hidden;opacity:0;transform:translateY(10px);transition:all .35s}
+#next.show{visibility:visible;opacity:1;transform:none}
+/* result */
+.big{font:700 clamp(3.4rem,14vw,6rem) Fredoka;line-height:1;margin:8px 0}
+.stars{font-size:3rem;letter-spacing:6px;margin:10px 0}
+.stars span{display:inline-block;color:#ffffff30;animation:star .6s both cubic-bezier(.2,1.6,.4,1);animation-delay:calc(var(--i)*.25s + .2s)}
+.stars span.f{color:var(--sun)}
+@keyframes star{from{transform:scale(0) rotate(-120deg)}}
+.acts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:22px 0}
+.miss{text-align:left;background:#00000026;border-radius:18px;padding:6px 18px;max-height:260px;overflow:auto}
+.miss div{padding:12px 0;border-bottom:1px solid #ffffff1f;line-height:1.5}
+.miss div:last-child{border:0}.miss mark{background:var(--mint);color:var(--ink);border-radius:6px;padding:0 6px;font-weight:700}
+.copy{position:fixed;left:0;right:0;bottom:10px;text-align:center;font-size:.8rem;opacity:.6;pointer-events:none;z-index:2}
+.cf{position:fixed;width:9px;height:14px;border-radius:2px;pointer-events:none;z-index:9}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}.bg{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+<main>
+
+<section class="screen on center" id="s-up">
+  <div class="fan" aria-hidden="true"><b>A</b><b>B</b><b>C</b></div>
+  <h1>Quiz Review</h1>
+  <p class="sub">Upload your reviewer. We turn it into multiple-choice questions. Pick the right answer before the timer runs out.</p>
+  <label class="drop" id="drop">
+    <strong>Drop a PDF or Word file here</strong>
+    <span>or click to browse</span><br>
+    <small>.pdf, .docx or .txt with selectable text</small>
+    <input type="file" id="file" accept=".pdf,.docx,.txt">
+  </label>
+  <div id="status" role="status"></div>
+</section>
+
+<section class="screen" id="s-menu">
+  <div class="top"><span class="chip" id="fname"></span><button class="btn ghost" id="newf">Change file</button></div>
+  <h2 style="font-size:2rem;margin-bottom:16px">Pick a difficulty</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="lv" id="lv"></div>
+  <p class="sub center" id="menuMsg" style="margin-top:20px;font-size:.95rem">Each level gives you 5 minutes. Press 1, 2 or 3 to answer fast. Score 60% or more to unlock the next level.</p>
+</section>
+
+<section class="screen" id="s-game">
+  <div class="hud">
+    <button class="btn ghost" id="quit" style="padding:8px 16px">Quit</button>
+    <span class="pill" id="lbl"></span>
+    <span class="pill" id="score">0</span>
+    <div class="clock" id="clock"><svg viewBox="0 0 64 64"><circle class="tr" cx="32" cy="32" r="24"/><circle class="pg" id="pg" cx="32" cy="32" r="24"/></svg><span id="time">5:00</span></div>
+  </div>
+  <div class="prog"><div id="bar"></div></div>
+  <div class="qn" id="qn"></div>
+  <div class="qbox" id="q"></div>
+  <div class="cards" id="cards"></div>
+  <div class="fb" id="fb" aria-live="polite"></div>
+  <button class="btn" id="next">Next question</button>
+</section>
+
+<section class="screen center" id="s-res">
+  <h2 id="rt" style="font-size:2rem"></h2>
+  <div class="big" id="rs"></div>
+  <div class="stars" id="stars" aria-hidden="true"></div>
+  <p class="sub" id="rm"></p>
+  <div class="acts" id="acts"></div>
+  <div id="missWrap"></div>
+</section>
+
+</main>
+<footer class="copy">© 2026 Winnce Tubtub. All rights reserved.</footer>
+<script>
+const $=s=>document.querySelector(s);
+const STOP=new Set('about above after again against also because been before being below between both cannot could does doing down during each from further have having here hers herself himself into itself just more most myself other ought over same should some such than that their theirs them then there these they this those through under until very were what when where which while will with would your yours yourself'.split(' '));
+const CFG={easy:{label:'Easy',sub:'Key terms',min:40,max:120,base:5,c:'#6fdca8'},normal:{label:'Normal',sub:'Any term',min:60,max:180,base:7,c:'#ffc83d'},hard:{label:'Hard',sub:'Rare terms, close choices',min:80,max:280,base:9,c:'#ff6b5b'}};
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let sents=[],freq={},pool=[],prog,diff='easy',lvl=1,qs=[],qi=0,score=0,left=300,timer=null,locked=false,missed=[];
+
+/* floating background cards */
+for(let n=0;n<8;n++){const i=document.createElement('i');i.style.cssText=`--x:${n*13+3}%;--r:${Math.random()*60-30}deg;--t:${28+Math.random()*20}s;--d:-${Math.random()*30}s`;$('#bg').appendChild(i)}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+function status(msg,err,spin){const s=$('#status');s.className=err?'err':'';s.innerHTML=(spin?'<span class="spin"></span>':'')+esc(msg)}
+
+/* ---------- file reading ---------- */
+const drop=$('#drop');
+['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer.files[0])handle(e.dataTransfer.files[0])});
+$('#file').addEventListener('change',e=>{if(e.target.files[0])handle(e.target.files[0])});
+$('#newf').onclick=()=>{$('#file').value='';status('');show('s-up')};
+
+async function handle(f){
+  const ext=f.name.split('.').pop().toLowerCase();
+  status('Reading '+f.name+'…',false,true);
+  try{
+    let t='';
+    if(ext==='pdf'){
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+      const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+      for(let p=1;p<=Math.min(pdf.numPages,80);p++){const c=await(await pdf.getPage(p)).getTextContent();t+=c.items.map(i=>i.str).join(' ')+'\n'}
+    }else if(ext==='docx'){t=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+    else if(ext==='txt'){t=await f.text()}
+    else return status('Use a .pdf, .docx or .txt file. Old .doc files: save them as .docx first.',true);
+    prep(t,f.name);
+  }catch(err){console.error(err);status('Could not read that file. Check your internet connection (needed for the PDF and Word readers) and try again.',true)}
+}
+
+function words(s){return s.match(/[A-Za-zÀ-ÿ0-9][A-Za-zÀ-ÿ0-9'’-]*/g)||[]}
+const okWord=w=>w.length>=5&&!STOP.has(w.toLowerCase())&&!/^\d/.test(w)&&!/[-'’]$/.test(w);
+
+function prep(t,name){
+  sents=t.replace(/\r/g,'').split(/(?<=[.!?])\s+|\n+/).map(s=>s.replace(/\s+/g,' ').trim()).filter(s=>s.length>=30&&s.length<=320&&words(s).length>=6);
+  freq={};const m=new Map();
+  sents.forEach(s=>words(s).filter(okWord).forEach(w=>{const k=w.toLowerCase();freq[k]=(freq[k]||0)+1;if(!m.has(k))m.set(k,w)}));
+  pool=[...m.values()];
+  if(sents.length<6||pool.length<8)return status('Not enough readable text. Scanned PDFs (images) can’t be read — use a text-based file.',true);
+  prog={unlocked:{easy:1,normal:1,hard:1},stars:{}};
+  $('#fname').textContent=name;diff='easy';renderMenu();show('s-menu');
+}
+
+/* ---------- question maker ---------- */
+function makeQs(n){
+  const c=CFG[diff];
+  let ss=sents.filter(s=>s.length>=c.min&&s.length<=c.max);
+  if(ss.length<n)ss=sents;
+  const out=[];
+  for(const s of shuf(ss)){
+    const ws=[...new Set(words(s).filter(okWord))];if(!ws.length)continue;
+    let pick;
+    if(diff==='normal')pick=shuf(ws)[0];
+    else{const sorted=shuf(ws).sort((a,b)=>diff==='easy'?freq[b.toLowerCase()]-freq[a.toLowerCase()]:(freq[a.toLowerCase()]-freq[b.toLowerCase()])||b.length-a.length);pick=sorted[0]}
+    const inS=new Set(words(s).map(w=>w.toLowerCase()));
+    let cand=pool.filter(w=>!inS.has(w.toLowerCase()));
+    const up=w=>w[0]===w[0].toUpperCase()&&w[0]!==w[0].toLowerCase();
+    let f;
+    if(diff==='hard')f=cand.filter(w=>Math.abs(w.length-pick.length)<=1&&up(w)===up(pick));
+    else if(diff==='easy')f=cand.filter(w=>Math.abs(w.length-pick.length)>=3);
+    else f=cand;
+    if(f.length<2)f=cand;
+    const d=shuf(f).slice(0,2);if(d.length<2)continue;
+    const re=new RegExp('(?<![A-Za-z0-9])'+pick.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![A-Za-z0-9])','i');
+    if(!re.test(s))continue;
+    out.push({html:esc(s).replace(re,'<span class="blank"></span>'),full:esc(s).replace(re,m=>'<mark>'+m+'</mark>'),opts:shuf([{t:pick,ok:true},{t:d[0]},{t:d[1]}])});
+    if(out.length>=n)break;
+  }
+  return out;
+}
+
+/* ---------- menu ---------- */
+function renderMenu(){
+  $('#tabs').innerHTML=Object.entries(CFG).map(([k,c])=>`<button class="tab ${k===diff?'on':''}" style="--c:${c.c}" data-k="${k}">${c.label}<small>${c.sub}</small></button>`).join('');
+  $('#tabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{diff=b.dataset.k;renderMenu()});
+  $('#lv').innerHTML=[1,2,3,4,5].map(l=>{
+    const lock=l>prog.unlocked[diff],st=prog.stars[diff+l]||0,n=CFG[diff].base+(l-1)*2;
+    return `<button class="lvl" ${lock?'disabled':''} data-l="${l}" style="animation-delay:${l*.06}s"><big>${lock?'🔒':l}</big>Level ${l}<small>${n} questions</small><div class="st">${[1,2,3].map(i=>i<=st?'<u>★</u>':'★').join('')}</div></button>`}).join('');
+  $('#lv').querySelectorAll('.lvl').forEach(b=>b.onclick=()=>start(+b.dataset.l));
+}
+
+/* ---------- game ---------- */
+function start(l){
+  lvl=l;qs=makeQs(CFG[diff].base+(l-1)*2);
+  if(qs.length<3){$('#menuMsg').textContent='This file doesn’t have enough usable sentences for that level. Try another difficulty or a longer file.';return}
+  qi=0;score=0;left=300;missed=[];
+  $('#score').textContent='0';$('#lbl').textContent=CFG[diff].label+' · Level '+l;
+  clock();clearInterval(timer);
+  timer=setInterval(()=>{left--;clock();if(left<=0)finish(true)},1000);
+  show('s-game');load();
+}
+function clock(){
+  $('#time').textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+  $('#pg').style.strokeDashoffset=151*(1-left/300);
+  $('#clock').classList.toggle('low',left<=60);
+}
+function load(){
+  const q=qs[qi];locked=false;
+  $('#qn').textContent='Question '+(qi+1)+' of '+qs.length;
+  $('#bar').style.width=(qi/qs.length*100)+'%';
+  const qb=$('#q');qb.innerHTML=q.html;qb.style.animation='none';void qb.offsetWidth;qb.style.animation='';
+  $('#cards').classList.remove('locked');
+  $('#cards').innerHTML=q.opts.map((o,i)=>`<button class="opt" style="--d:${.08+i*.1}s" data-i="${i}"><b>${'ABC'[i]}</b><span class="a">${esc(o.t)}</span><span class="tag"></span></button>`).join('');
+  $('#cards').querySelectorAll('.opt').forEach(c=>c.onclick=()=>pick(+c.dataset.i));
+  const fb=$('#fb');fb.className='fb';fb.textContent='';
+  $('#next').className='btn';$('#next').textContent=qi===qs.length-1?'See results':'Next question';
+}
+function pick(k){
+  if(locked)return;locked=true;$('#cards').classList.add('locked');
+  const q=qs[qi],cs=[...document.querySelectorAll('.opt')],ok=q.opts[k].ok,fb=$('#fb');
+  cs[k].classList.add(ok?'ok':'bad');
+  cs[k].querySelector('.tag').textContent=ok?'✓ Correct':'✗ Wrong';
+  if(ok){score++;const p=$('#score');p.textContent=score;p.classList.remove('bump');void p.offsetWidth;p.classList.add('bump');burst(cs[k]);fb.textContent='Correct! Nice one.';fb.className='fb on ok'}
+  else{missed.push(q);if(!reduce)cs[k].animate([{transform:'translateX(0)'},{transform:'translateX(-12px)'},{transform:'translateX(12px)'},{transform:'translateX(-8px)'},{transform:'translateX(0)'}],{duration:400});fb.textContent='Not quite. The correct answer is highlighted.';fb.className='fb on bad'}
+  cs.forEach((c,j)=>{if(j===k)return;setTimeout(()=>{if(q.opts[j].ok){c.classList.add('ok');c.querySelector('.tag').textContent='✓ Correct answer'}else c.classList.add('dim')},ok?150:450)});
+  setTimeout(()=>{$('#next').classList.add('show');$('#next').focus()},700);
+}
+document.addEventListener('keydown',e=>{const i='123'.indexOf(e.key);if(i>-1&&$('#s-game').classList.contains('on'))pick(i)});
+$('#next').onclick=()=>{qi++;qi>=qs.length?finish(false):load()};
+$('#quit').onclick=()=>{clearInterval(timer);renderMenu();show('s-menu')};
+
+function burst(el){
+  if(reduce)return;
+  const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,cols=['#ffc83d','#ff6b5b','#6fdca8','#fbf6e9'];
+  for(let n=0;n<24;n++){
+    const p=document.createElement('i');p.className='cf';p.style.cssText=`left:${cx}px;top:${cy}px;background:${cols[n%4]}`;document.body.appendChild(p);
+    const a=Math.random()*6.28,d=60+Math.random()*120;
+    p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d+50}px) rotate(${Math.random()*540}deg) scale(.6)`,opacity:0}],{duration:900+Math.random()*400,easing:'cubic-bezier(.1,.8,.3,1)'}).onfinish=()=>p.remove();
+  }
+}
+
+/* ---------- results ---------- */
+function finish(timeUp){
+  clearInterval(timer);
+  const total=qs.length,pct=score/total,passed=pct>=.6,stars=pct>=.9?3:pct>=.8?2:passed?1:0;
+  prog.stars[diff+lvl]=Math.max(prog.stars[diff+lvl]||0,stars);
+  if(passed)prog.unlocked[diff]=Math.max(prog.unlocked[diff],Math.min(5,lvl+1));
+  $('#rt').textContent=timeUp?'Time’s up!':passed?'Level cleared!':'Keep going!';
+  $('#rs').textContent=score+' / '+total;
+  $('#stars').innerHTML=[1,2,3].map(i=>`<span class="${i<=stars?'f':''}" style="--i:${i}">★</span>`).join('');
+  $('#rm').textContent=passed?(lvl<5?'You scored '+Math.round(pct*100)+'%. Level '+(lvl+1)+' is unlocked.':'You finished every '+CFG[diff].label+' level.'):'You need 60% to unlock the next level. Review the misses below and try again.';
+  $('#acts').innerHTML=(passed&&lvl<5?'<button class="btn" id="b1">Next level</button>':'')+'<button class="btn '+(passed&&lvl<5?'ghost':'')+'" id="b2">Try again</button><button class="btn ghost" id="b3">All levels</button>';
+  if($('#b1'))$('#b1').onclick=()=>start(lvl+1);
+  $('#b2').onclick=()=>start(lvl);
+  $('#b3').onclick=()=>{renderMenu();show('s-menu')};
+  $('#missWrap').innerHTML=missed.length?'<h2 style="font-size:1.3rem;margin:10px 0">Review these</h2><div class="miss">'+missed.map(q=>'<div>'+q.full+'</div>').join('')+'</div>':'';
+  show('s-res');
+  if(passed&&stars===3)setTimeout(()=>burst($('#rs')),400);
+}
+</script>
+</body>
+</html>
